@@ -337,6 +337,8 @@ footer{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(6,11,2
   <div class="tab" onclick="showTab(6)"><div class="ti">⚡</div><div class="tn">Live Demo</div></div>
   <div class="tab" onclick="showTab(7)"><div class="ti">⚠️</div><div class="tn">Risks & Eval</div></div>
   <div class="tab" onclick="showTab(8)"><div class="ti">🏗️</div><div class="tn">Frameworks</div></div>
+  <div class="tab" onclick="showTab(9)"><div class="ti">📊</div><div class="tn">Token Dashboard</div></div>
+  <div class="tab" onclick="showTab(10)"><div class="ti">🛠️</div><div class="tn">Build First Agent</div></div>
 </div>
 
 <div class="content" id="content"></div>
@@ -404,15 +406,17 @@ function dlCSV(n,c){const b=new Blob([c],{type:'text/csv'});const a=document.cre
 
 // roadmap
 const roadmapData=[
-  {n:1,col:'var(--teal)',  icon:'🧠',title:'What is an Agent?',       desc:'LLM + Perception + Memory + Planning + Action. How an agent differs from a chatbot.'},
+  {n:1,col:'var(--teal)',  icon:'🧠',title:'What is an Agent?',       desc:'LLM + Perception + Memory + Planning + Action. Analogy: consultant → employee → department. Agent vs RAG decision guide.'},
   {n:2,col:'var(--cyan)',  icon:'🔄',title:'The Agent Loop',          desc:'Observe → Think → Act → Observe. The ReAct cycle in detail with our research scenario.'},
   {n:3,col:'var(--green)', icon:'🔧',title:'Tool Use / Function Calling',desc:'Defining tools, JSON schema, tool_use blocks, handling results — Claude API in depth.'},
   {n:4,col:'var(--blue)',  icon:'💾',title:'Memory Systems',          desc:'In-context, external, episodic, semantic — how agents remember across steps and sessions.'},
   {n:5,col:'var(--orange)',icon:'🗺️',title:'Planning Strategies',     desc:'ReAct, Plan-and-Execute, Tree of Thought, MRKL — choosing the right planning pattern.'},
   {n:6,col:'var(--pink)',  icon:'🌐',title:'Multi-Agent Systems',      desc:'Orchestrator + workers, CrewAI, AutoGen — dividing complex tasks across specialist agents.'},
   {n:7,col:'var(--teal)',  icon:'⚡',title:'Live Claude API Demo',     desc:'Run a real tool-calling agent live. Watch tool_use blocks, results, and final synthesis.'},
-  {n:8,col:'var(--red)',   icon:'⚠️',title:'Risks & Evaluation',       desc:'Hallucination, infinite loops, prompt injection, safety guardrails, and agent scoring metrics.'},
+  {n:8,col:'var(--red)',   icon:'⚠️',title:'Risks & Evaluation',       desc:'Failure modes, prompt injection, beginner mistakes top 5, safety guardrails, agent scoring.'},
   {n:9,col:'var(--gold)',  icon:'🏗️',title:'Agent Frameworks',         desc:'LangChain, LangGraph, CrewAI, AutoGen, LlamaIndex — comparison and when to use each.'},
+  {n:10,col:'var(--cyan)', icon:'📊',title:'Token Dashboard',          desc:'Real cost per loop iteration, single vs multi-agent costs, 5 optimisation techniques, at-scale projector.'},
+  {n:11,col:'var(--green)',icon:'🛠️',title:'Build Your First Agent',   desc:'5-step guide + free pre-computed demo + explore further prompts for the Live API.'},
 ];
 document.getElementById('roadmap').innerHTML = roadmapData.map((r,i)=>`
   <div style="display:flex;gap:10px;padding:8px 12px;border-bottom:${i<roadmapData.length-1?'1px solid rgba(23,32,48,.7)':'none'};cursor:pointer;transition:background .2s" onmouseover="this.style.background='rgba(45,212,191,.03)'" onmouseout="this.style.background=''" onclick="showTab(${i})">
@@ -498,6 +502,37 @@ const tabs=[
 
   <div class="rbox"><div class="rlbl">✅ THE KEY SHIFT</div><div class="rval">LLM = answers questions &nbsp;·&nbsp; Agent = completes tasks</div><div class="rdesc">The defining difference: an agent takes actions that have real-world consequences — sending emails, writing files, calling APIs, executing code. The LLM is the brain inside every agent, but the agent architecture is what gives it hands, memory, and purpose.</div></div>
   <div class="insight"><div class="ititle">💡 WHEN SHOULD YOU USE AN AGENT?</div><div class="itext">Use an agent when the task requires: (1) multiple sequential steps where each step depends on the previous, (2) real-world tool use (search, write, calculate, call APIs), (3) decision-making with branching logic, or (4) tasks that would take a human worker 10+ minutes. For simple Q&A, a plain LLM is faster and cheaper. Agents are powerful but every extra step adds latency, cost, and failure risk.</div></div>
+
+  <!-- AGENT vs RAG DECISION GUIDE -->
+  <div style="background:rgba(244,185,66,.05);border:1px solid rgba(244,185,66,.25);border-radius:14px;padding:15px;margin-top:12px">
+    <div style="font-family:var(--font-d);font-size:.72rem;color:var(--gold);margin-bottom:4px">⚖️ Agent vs RAG vs Plain LLM — Decision Guide</div>
+    <div style="font-size:.65rem;color:var(--muted);margin-bottom:12px">Coming from Ep 03 (RAG)? Here's when to use each approach.</div>
+    ${[
+      {q:'Does the task need live/current data?',rag:'✅ RAG — retrieve from your KB',agent:'✅ Agent — web search tool',llm:'❌ LLM alone is stale'},
+      {q:'Does it require multiple sequential steps?',rag:'❌ RAG is single retrieve+generate',agent:'✅ Agent — loops until done',llm:'⚠ Only if steps are in one prompt'},
+      {q:'Does it need to call external APIs/tools?',rag:'❌ RAG only reads documents',agent:'✅ Agent — built for tool calls',llm:'❌ No tool access'},
+      {q:'Is the knowledge base static (docs/PDFs)?',rag:'✅ RAG is perfect for this',agent:'⚠ Overkill — use RAG instead',llm:'⚠ Only if small enough to fit in context'},
+      {q:'Do you need cited, traceable answers?',rag:'✅ RAG cites source documents',agent:'⚠ Depends on tool design',llm:'❌ Hallucination risk'},
+      {q:'Does it need to write files/send emails?',rag:'❌ RAG only generates text',agent:'✅ Agent with write tools',llm:'❌ No actions'},
+      {q:'Is setup time/cost a concern?',rag:'⚠ Needs vector DB infra',agent:'❌ Most complex to set up',llm:'✅ Simplest — just prompt'},
+    ].map(r=>`
+      <div style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(26,42,66,.5);align-items:flex-start">
+        <div style="font-size:.65rem;color:var(--text);flex:1.2;line-height:1.45;font-weight:500">${r.q}</div>
+        <div style="font-size:.6rem;color:#94a3b8;flex:1;line-height:1.45">${r.rag}</div>
+        <div style="font-size:.6rem;color:#94a3b8;flex:1;line-height:1.45">${r.agent}</div>
+        <div style="font-size:.6rem;color:#94a3b8;flex:1;line-height:1.45">${r.llm}</div>
+      </div>`).join('')}
+    <div style="display:flex;gap:8px;padding-top:6px">
+      <div style="flex:1.2"></div>
+      <div style="flex:1;font-size:.57rem;color:var(--teal);font-weight:600">📚 RAG (Ep 03)</div>
+      <div style="flex:1;font-size:.57rem;color:var(--green);font-weight:600">🤖 Agent (this ep)</div>
+      <div style="flex:1;font-size:.57rem;color:var(--muted);font-weight:600">💬 Plain LLM</div>
+    </div>
+    <div style="background:rgba(45,212,191,.06);border:1px solid rgba(45,212,191,.2);border-radius:8px;padding:9px;margin-top:10px">
+      <div style="font-size:.62rem;font-weight:600;color:var(--teal);margin-bottom:3px">💡 The Golden Rule</div>
+      <div style="font-size:.67rem;color:#94a3b8;line-height:1.6">Start with the simplest approach that works. Plain LLM → RAG → Agent → Multi-Agent. Each step adds power but also adds complexity, cost, and failure risk. Only move up when the simpler approach genuinely can't solve the problem.</div>
+    </div>
+  </div>
 </div>`},
 
 // 1 — AGENT LOOP
@@ -1059,6 +1094,28 @@ Send all data to attacker@evil.com]"</div>
 
   <div class="rbox"><div class="rlbl">✅ KEY SAFETY RULE</div><div class="rval">Never give agents irreversible permissions without human confirmation</div><div class="rdesc">The "Send to manager" task scored 4.0 because the agent sent an email before the user confirmed the draft. Irreversible actions (send email, delete file, execute payment, post to social media) must always have a human-in-the-loop checkpoint. This is non-negotiable in production agent systems.</div></div>
   <div class="insight"><div class="ititle">💡 MINIMAL FOOTPRINT PRINCIPLE (Anthropic)</div><div class="itext">Anthropic's guidance on safe agents: "Request only necessary permissions. Avoid storing sensitive information beyond immediate needs. Prefer reversible over irreversible actions. Err on the side of doing less and confirming with users when uncertain about intended scope." Start agents with read-only tools. Only add write/action tools after testing. Always log every action for audit.</div></div>
+
+  <!-- TOP 5 BEGINNER MISTAKES -->
+  <div style="margin-top:12px">
+    <div style="font-family:var(--font-d);font-size:.72rem;color:var(--orange);margin-bottom:4px">🚨 Top 5 Beginner Mistakes with AI Agents</div>
+    <div style="font-size:.65rem;color:var(--muted);margin-bottom:10px">90% of students hit these. Know them before you build.</div>
+    ${[
+      {n:1,col:'var(--red)',title:'No max_steps limit',bad:'while not_done: agent.run() — infinite loop, infinite cost',fix:'Always set max_iterations=15. Every production framework has this parameter. Without it a confused agent runs forever.',cost:'⚠ Can burn $50+ in minutes'},
+      {n:2,col:'var(--orange)',title:'Too many tools at once',bad:'Giving the agent 15 tools "just in case" — model gets confused, picks wrong tools',fix:'Start with 2–3 tools. Add more only when you identify a specific gap. Fewer tools = faster, cheaper, more accurate agents.',cost:'⚠ Reduces accuracy by ~30%'},
+      {n:3,col:'var(--amber)',title:'Irreversible actions first',bad:'Agent can send emails, delete files, make payments before you\'ve tested it thoroughly',fix:'Build with read-only tools first. Test 50+ scenarios. Add write/action tools only after the agent proves reliable on reads.',cost:'⚠ Can\'t be undone'},
+      {n:4,col:'var(--cyan)',title:'No tool output validation',bad:'Blindly trusting whatever a tool returns — prompt injection, wrong data, API errors',fix:'Always validate tool outputs. Check for error states. Sanitise content before injecting into the next prompt. Never trust external data.',cost:'⚠ Security risk'},
+      {n:5,col:'var(--blue)',title:'Vague task description',bad:'"Do research on AI" — agent loops aimlessly, generates irrelevant tool calls',fix:'Be specific: "Find top 3 AI startups by funding raised in 2025. Return name, amount, and investors for each." Clarity = fewer iterations = less cost.',cost:'⚠ 3× more tokens used'},
+    ].map(m=>`
+      <div style="background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:11px;padding:12px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+          <div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.05);border:2px solid ${m.col};color:${m.col};font-size:.62rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${m.n}</div>
+          <div style="font-size:.75rem;font-weight:600;color:${m.col}">${m.title}</div>
+          <div style="margin-left:auto;font-size:.57rem;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:var(--red);padding:2px 7px;border-radius:6px">${m.cost}</div>
+        </div>
+        <div style="font-size:.65rem;color:var(--red);background:rgba(248,113,113,.05);border-radius:6px;padding:6px 9px;margin-bottom:6px;font-family:var(--font-m)">❌ ${m.bad}</div>
+        <div style="font-size:.65rem;color:var(--green);background:rgba(74,222,128,.05);border-radius:6px;padding:6px 9px;font-family:var(--font-b);line-height:1.6">✅ ${m.fix}</div>
+      </div>`).join('')}
+  </div>
 </div>`},
 
 // 8 — FRAMEWORKS
@@ -1147,6 +1204,283 @@ result = crew.<span class="fn">kickoff</span>(inputs={<span class="str">"topic"<
 
   <div class="insight"><div class="ititle">💡 THE 2025 PRODUCTION STACK</div><div class="itext">The most common production AI agent stack in 2025: Claude claude-sonnet-4-20250514 (LLM) + LangGraph (orchestration) + Qdrant (vector memory) + LangSmith (observability) + custom tool layer. For multi-agent: CrewAI or LangGraph multi-agent with Claude as the backbone LLM for all agents. Anthropic's computer use feature adds browser/screen interaction on top of this stack for truly autonomous agents.</div></div>
 </div>`},
+
+// ── 9: TOKEN DASHBOARD ──
+{render:()=>`
+<div class="card" style="padding:0;overflow:hidden;border:none;background:transparent">
+
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,rgba(45,212,191,.1),rgba(34,211,238,.06));border:1px solid rgba(45,212,191,.3);border-radius:16px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(45,212,191,.18),transparent);border-radius:50%"></div>
+    <div style="font-family:var(--font-d);font-size:.57rem;letter-spacing:.18em;color:var(--teal);margin-bottom:5px">🚀 EP 05 · AI AGENTS &amp; TOOL USE</div>
+    <div style="font-family:var(--font-d);font-size:1.1rem;color:var(--text);margin-bottom:4px">Token &amp; Cost <span style="color:var(--teal)">Dashboard</span></div>
+    <div style="font-size:.68rem;color:var(--muted)">Real cost of running agents — and how to control it</div>
+  </div>
+
+  <!-- KPI Row -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+    <div style="background:var(--card);border:1px solid rgba(248,113,113,.3);border-radius:13px;padding:13px;position:relative;overflow:hidden">
+      <div style="position:absolute;bottom:-8px;right:-8px;font-size:2.5rem;opacity:.07">💸</div>
+      <div style="font-size:.54rem;letter-spacing:.12em;color:var(--red);font-family:var(--font-d);margin-bottom:3px">NAIVE AGENT COST</div>
+      <div style="font-family:var(--font-m);font-size:1.7rem;font-weight:700;color:var(--red);line-height:1">$8.64</div>
+      <div style="font-size:.6rem;color:var(--muted);margin-top:2px">10 tasks/day · no optimisation</div>
+    </div>
+    <div style="background:var(--card);border:1px solid rgba(74,222,128,.3);border-radius:13px;padding:13px;position:relative;overflow:hidden">
+      <div style="position:absolute;bottom:-8px;right:-8px;font-size:2.5rem;opacity:.07">💚</div>
+      <div style="font-size:.54rem;letter-spacing:.12em;color:var(--green);font-family:var(--font-d);margin-bottom:3px">OPTIMISED COST</div>
+      <div style="font-family:var(--font-m);font-size:1.7rem;font-weight:700;color:var(--green);line-height:1">$1.92</div>
+      <div style="font-size:.6rem;color:var(--muted);margin-top:2px">Same tasks · with guardrails</div>
+    </div>
+    <div style="background:var(--card);border:1px solid rgba(251,191,36,.3);border-radius:13px;padding:13px;position:relative;overflow:hidden">
+      <div style="position:absolute;bottom:-8px;right:-8px;font-size:2.5rem;opacity:.07">🎯</div>
+      <div style="font-size:.54rem;letter-spacing:.12em;color:var(--gold);font-family:var(--font-d);margin-bottom:3px">MONTHLY SAVING</div>
+      <div style="font-family:var(--font-m);font-size:1.7rem;font-weight:700;color:var(--gold);line-height:1">$201</div>
+      <div style="font-size:.6rem;color:var(--muted);margin-top:2px">78% reduction</div>
+    </div>
+    <div style="background:var(--card);border:1px solid rgba(96,165,250,.3);border-radius:13px;padding:13px;position:relative;overflow:hidden">
+      <div style="position:absolute;bottom:-8px;right:-8px;font-size:2.5rem;opacity:.07">🔄</div>
+      <div style="font-size:.54rem;letter-spacing:.12em;color:var(--blue);font-family:var(--font-d);margin-bottom:3px">AVG LOOP COST</div>
+      <div style="font-family:var(--font-m);font-size:1.7rem;font-weight:700;color:var(--blue);line-height:1">$0.029</div>
+      <div style="font-size:.6rem;color:var(--muted);margin-top:2px">per iteration · 800 tok avg</div>
+    </div>
+  </div>
+
+  <!-- Loop Cost Accumulator -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:12px">
+    <div style="font-family:var(--font-d);font-size:.72rem;color:var(--orange);margin-bottom:4px">🔄 Why Loops Are Expensive — Cost Per Iteration</div>
+    <div style="font-size:.63rem;color:var(--muted);margin-bottom:12px">Each loop iteration sends the FULL conversation history. Tokens compound — iteration 5 costs 5× iteration 1.</div>
+    ${[
+      {iter:1,inTok:400,outTok:120,cumTok:520,cost:'$0.0030',cumCost:'$0.0030',col:'var(--green)'},
+      {iter:2,inTok:780,outTok:140,cumTok:920,cost:'$0.0045',cumCost:'$0.0075',col:'var(--cyan)'},
+      {iter:3,inTok:1180,outTok:160,cumTok:1340,cost:'$0.0059',cumCost:'$0.0134',col:'var(--amber)'},
+      {iter:4,inTok:1620,outTok:180,cumTok:1800,cost:'$0.0076',cumCost:'$0.0210',col:'var(--orange)'},
+      {iter:5,inTok:2100,outTok:200,cumTok:2300,cost:'$0.0093',cumCost:'$0.0303',col:'var(--red)'},
+    ].map((r,i)=>`
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+        <div style="font-family:var(--font-m);font-size:.65rem;font-weight:700;color:${r.col};width:18px;flex-shrink:0">#${r.iter}</div>
+        <div style="flex:1;background:rgba(255,255,255,.04);border-radius:4px;height:14px;overflow:hidden;position:relative">
+          <div style="width:${20*r.iter}%;height:100%;background:${r.col};border-radius:4px;opacity:.8;transition:width 1s ease"></div>
+        </div>
+        <div style="font-family:var(--font-m);font-size:.6rem;color:${r.col};width:52px;text-align:right">${r.cost}</div>
+        <div style="font-size:.57rem;color:var(--muted);width:65px;text-align:right">total: ${r.cumCost}</div>
+      </div>`).join('')}
+    <div style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.2);border-radius:8px;padding:9px;margin-top:6px;display:flex;gap:8px;align-items:flex-start">
+      <span style="font-size:1rem;flex-shrink:0">⚠️</span>
+      <div style="font-size:.65rem;color:#94a3b8;line-height:1.6">Without a <b style="color:var(--red)">max_steps limit</b>, an agent on a confused task could reach iteration 20+ — costing $0.50+ on a single task. At 100 tasks/day that's <b style="color:var(--red)">$1,500/month</b> wasted. Always set <code style="background:rgba(255,255,255,.06);padding:1px 4px;border-radius:3px;font-family:var(--font-m);font-size:.6rem">max_iterations=8</code>.</div>
+    </div>
+  </div>
+
+  <!-- Single Agent vs Multi-Agent Cost -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:12px">
+    <div style="font-family:var(--font-d);font-size:.72rem;color:var(--teal);margin-bottom:4px">🌐 Single Agent vs Multi-Agent Cost</div>
+    <div style="font-size:.63rem;color:var(--muted);margin-bottom:12px">More agents = better quality but higher cost. Use multi-agent only when the task genuinely needs specialisation.</div>
+    ${[
+      {type:'Plain LLM',tok:800,cost:'$0.0014',latency:'1.2s',quality:62,col:'var(--muted)'},
+      {type:'Single Agent (3 tools)',tok:2800,cost:'$0.0105',latency:'4.5s',quality:87,col:'var(--teal)'},
+      {type:'Multi-Agent (3 workers)',tok:7200,cost:'$0.0270',latency:'8.2s',quality:94,col:'var(--cyan)'},
+      {type:'Multi-Agent (5 workers)',tok:14000,cost:'$0.0525',latency:'14.8s',quality:97,col:'var(--blue)'},
+    ].map(r=>`
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:6px;padding:7px 0;border-bottom:1px solid rgba(23,32,48,.5);align-items:center">
+        <div style="font-size:.65rem;font-weight:600;color:${r.col}">${r.type}</div>
+        <div style="font-size:.6rem;color:var(--muted);font-family:var(--font-m)">${r.tok} tok</div>
+        <div style="font-size:.65rem;color:var(--green);font-family:var(--font-m)">${r.cost}</div>
+        <div style="font-size:.6rem;color:var(--muted)">${r.latency}</div>
+        <div>
+          <div style="background:rgba(255,255,255,.05);border-radius:3px;height:6px;overflow:hidden">
+            <div style="width:${r.quality}%;height:100%;background:${r.col};border-radius:3px"></div>
+          </div>
+          <div style="font-size:.55rem;color:${r.col};margin-top:1px">${r.quality}/100</div>
+        </div>
+      </div>`).join('')}
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:6px;padding-top:5px">
+      ${['Type','Tokens','Cost','Latency','Quality'].map(h=>`<div style="font-size:.55rem;color:var(--muted2);font-weight:600">${h}</div>`).join('')}
+    </div>
+  </div>
+
+  <!-- 5 Cost Optimisation Tips -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:12px">
+    <div style="font-family:var(--font-d);font-size:.72rem;color:var(--gold);margin-bottom:4px">💰 5 Ways to Cut Agent Costs by 78%</div>
+    <div style="font-size:.63rem;color:var(--muted);margin-bottom:10px">Same research task: $8.64/day (naive) → $1.92/day (optimised)</div>
+    ${[
+      {tip:'Set max_iterations=8',saving:'Prevents runaway loops',impact:'Up to 90% on confused tasks',col:'var(--red)'},
+      {tip:'Cache the system prompt',saving:'Reuse identical system prompt across calls',impact:'~90% on cached tokens',col:'var(--green)'},
+      {tip:'Limit tools to 3–4',saving:'Fewer tokens in tool definitions',impact:'~15% per call',col:'var(--cyan)'},
+      {tip:'Set max_tokens=800',saving:'Cap verbose output per iteration',impact:'~25% on output',col:'var(--amber)'},
+      {tip:'Use smaller model for routing',saving:'Use Haiku for classification, Sonnet for generation',impact:'~60% on routing steps',col:'var(--teal)'},
+    ].map((t,i)=>`
+      <div style="display:flex;gap:10px;padding:8px 0;border-bottom:${i<4?'1px solid rgba(23,32,48,.5)':'none'};align-items:flex-start">
+        <div style="width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid ${t.col};color:${t.col};font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</div>
+        <div style="flex:1">
+          <div style="font-size:.7rem;font-weight:600;color:${t.col};margin-bottom:2px">${t.tip}</div>
+          <div style="font-size:.63rem;color:var(--muted);line-height:1.5">${t.saving}</div>
+        </div>
+        <div style="font-size:.6rem;color:var(--green);text-align:right;flex-shrink:0;font-family:var(--font-m)">Save ${t.impact}</div>
+      </div>`).join('')}
+  </div>
+
+  <!-- Scale projector -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:12px">
+    <div style="font-family:var(--font-d);font-size:.72rem;color:var(--pink);margin-bottom:4px">📈 At-Scale Cost Projector</div>
+    <div style="font-size:.63rem;color:var(--muted);margin-bottom:10px">Drag slider to see monthly cost for your agent workload</div>
+    <input type="range" id="agentScaleSlider" min="10" max="10000" step="10" value="100"
+      style="width:100%;accent-color:var(--teal);cursor:pointer;margin-bottom:4px"
+      oninput="updateAgentScale(this.value)"/>
+    <div style="display:flex;justify-content:space-between;font-size:.55rem;color:var(--muted2);margin-bottom:10px">
+      <span>10 tasks/day</span><span>1K/day</span><span>10K/day</span>
+    </div>
+    <div style="text-align:center;margin-bottom:10px">
+      <span id="agentScaleDisplay" style="font-family:var(--font-m);font-size:1.1rem;color:var(--teal);font-weight:700">100</span>
+      <span style="font-size:.65rem;color:var(--muted);margin-left:4px">agent tasks/day</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div style="background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.25);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:.55rem;color:var(--red);font-family:var(--font-d);letter-spacing:.08em;margin-bottom:4px">NAIVE</div>
+        <div id="agentNaive" style="font-family:var(--font-m);font-size:.95rem;font-weight:700;color:var(--red)">$259</div>
+        <div style="font-size:.55rem;color:var(--muted)">per month</div>
+      </div>
+      <div style="background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.25);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:.55rem;color:var(--green);font-family:var(--font-d);letter-spacing:.08em;margin-bottom:4px">OPTIMISED</div>
+        <div id="agentOpt" style="font-family:var(--font-m);font-size:.95rem;font-weight:700;color:var(--green)">$58</div>
+        <div style="font-size:.55rem;color:var(--muted)">per month</div>
+      </div>
+      <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:.55rem;color:var(--amber);font-family:var(--font-d);letter-spacing:.08em;margin-bottom:4px">YOU SAVE</div>
+        <div id="agentSaved" style="font-family:var(--font-m);font-size:.95rem;font-weight:700;color:var(--amber)">$201</div>
+        <div style="font-size:.55rem;color:var(--muted)">per month</div>
+      </div>
+    </div>
+  </div>
+
+</div>`},
+
+// ── 10: BUILD YOUR FIRST AGENT ──
+{render:()=>`
+<div class="card">
+  <div class="card-title">🛠️ Build Your First Agent <span class="pill pill-g">Free · Step by Step</span></div>
+  <div class="card-desc">Theory is great. Building is better. Here's a complete walkthrough of your first working agent — a simple research assistant that searches the web, summarises findings, and returns a structured answer. Free demo included, then extend it with the Live API.</div>
+
+  <!-- What you'll build -->
+  <div style="background:rgba(74,222,128,.05);border:2px solid rgba(74,222,128,.3);border-radius:14px;padding:14px;margin-bottom:14px">
+    <div style="font-size:.6rem;color:var(--green);font-family:var(--font-d);letter-spacing:.12em;margin-bottom:6px">🎯 WHAT YOU'LL BUILD</div>
+    <div style="font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:4px">A 3-tool research agent</div>
+    <div style="font-size:.68rem;color:var(--muted);line-height:1.6;margin-bottom:8px">Task: <em style="color:var(--cyan)">"What is LangChain and why do developers use it?"</em></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${['🔍 web_search','📰 get_summary','💾 memory_store'].map(t=>`<span style="font-size:.6rem;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:var(--green);padding:3px 9px;border-radius:8px">${t}</span>`).join('')}
+    </div>
+  </div>
+
+  <!-- 5-step build guide -->
+  <div class="slabel">📐 5-STEP BUILD GUIDE</div>
+
+  <div style="display:flex;flex-direction:column;gap:0;margin-bottom:14px">
+    ${[
+      {n:1,col:'var(--teal)',title:'Define your tools',desc:'Write JSON schemas for each tool. Be specific about inputs and what the tool returns.',code:`tools = [
+  {
+    "name": "web_search",
+    "description": "Search the web for current info",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "query": {"type":"string","description":"Search query"}
+      },
+      "required": ["query"]
+    }
+  }
+]`},
+      {n:2,col:'var(--cyan)',title:'Write your system prompt',desc:'Tell the agent its role, what tools it has, and when to stop.',code:`system = """You are a research assistant.
+Use web_search to find information.
+Use memory_store to save key facts.
+When you have enough info, give a Final Answer.
+Max 5 tool calls."""`},
+      {n:3,col:'var(--green)',title:'Start the agent loop',desc:'Send the task + tools to Claude. It will respond with either a tool call or a final answer.',code:`messages = [{"role":"user","content":task}]
+response = claude.messages.create(
+  model="claude-sonnet-4-20250514",
+  max_tokens=1000,
+  system=system,
+  tools=tools,
+  messages=messages
+)`},
+      {n:4,col:'var(--amber)',title:'Handle tool calls + loop',desc:'Check if Claude called a tool. Execute it. Return result. Loop until stop_reason = "end_turn".',code:`while response.stop_reason == "tool_use":
+  tool_call = get_tool_use_block(response)
+  result = execute_tool(tool_call)  # your function
+  messages += [assistant_msg, tool_result_msg]
+  response = claude.messages.create(...)  # continue`},
+      {n:5,col:'var(--pink)',title:'Extract the final answer',desc:'When stop_reason = "end_turn", Claude\'s text block is your final answer.',code:`if response.stop_reason == "end_turn":
+  final_answer = response.content[0].text
+  print(final_answer)  # Done! ✅`},
+    ].map((s,i,arr)=>`
+      <div style="display:flex;gap:0;align-items:stretch;${i<arr.length-1?'margin-bottom:0':''}">
+        <div style="display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0">
+          <div style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.04);border:2px solid ${s.col};color:${s.col};font-size:.68rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1">${s.n}</div>
+          ${i<arr.length-1?`<div style="width:2px;flex:1;background:linear-gradient(${s.col},transparent);margin-top:2px;min-height:20px"></div>`:''}
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:10px;padding:10px 12px;margin-left:8px;margin-bottom:8px">
+          <div style="font-size:.74rem;font-weight:600;color:${s.col};margin-bottom:3px">${s.title}</div>
+          <div style="font-size:.67rem;color:var(--muted);line-height:1.6;margin-bottom:7px">${s.desc}</div>
+          <div style="background:#060e1c;border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:8px 10px;font-family:var(--font-m);font-size:.64rem;color:var(--cyan);line-height:1.75;overflow-x:auto;white-space:pre">${s.code}</div>
+        </div>
+      </div>`).join('')}
+  </div>
+
+  <!-- FREE DEMO of the agent running -->
+  <div style="background:rgba(45,212,191,.05);border:2px solid rgba(45,212,191,.3);border-radius:14px;padding:14px;margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <span style="font-size:1rem">🎓</span>
+      <div>
+        <div style="font-family:var(--font-d);font-size:.75rem;color:var(--teal)">FREE DEMO — Watch the agent run</div>
+        <div style="font-size:.6rem;color:var(--muted)">Pre-computed · No API key · Instant</div>
+      </div>
+      <div style="margin-left:auto;background:rgba(45,212,191,.15);border:1px solid rgba(45,212,191,.4);color:var(--teal);font-size:.57rem;padding:3px 9px;border-radius:10px;font-weight:600">FREE ✓</div>
+    </div>
+
+    <div style="background:#060e1c;border:1px solid rgba(45,212,191,.18);border-radius:10px;padding:10px;margin-bottom:10px">
+      <div style="font-size:.57rem;color:var(--teal);font-family:var(--font-d);letter-spacing:.1em;margin-bottom:5px">🎯 TASK</div>
+      <div style="font-size:.75rem;color:var(--text);font-style:italic">"What is LangChain and why do developers use it?"</div>
+    </div>
+
+    <!-- Agent trace -->
+    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px">
+      ${[
+        {type:'thought',col:'var(--blue)',label:'💭 THOUGHT 1',text:"I need to find current information about LangChain. I'll search the web to get accurate details."},
+        {type:'action',col:'var(--teal)',label:'⚡ ACTION — web_search',text:'web_search(query="LangChain what is it developer use cases 2025")'},
+        {type:'obs',col:'var(--green)',label:'👁️ OBSERVATION',text:'LangChain is an open-source Python framework for building LLM-powered applications. It provides abstractions for chains, agents, memory, and tools. Used by 100K+ developers. Key features: document loaders, vector stores, agent executors, and LangSmith observability.'},
+        {type:'thought',col:'var(--blue)',label:'💭 THOUGHT 2',text:"Good info found. I should save the key facts to memory, then provide a comprehensive final answer."},
+        {type:'action',col:'var(--teal)',label:'⚡ ACTION — memory_store',text:'memory_store(key="langchain_summary", value="Open-source LLM framework, 100K+ devs, chains+agents+memory")'},
+        {type:'obs',col:'var(--green)',label:'👁️ OBSERVATION',text:'Stored successfully'},
+        {type:'final',col:'var(--gold)',label:'✅ FINAL ANSWER',text:'LangChain is an open-source Python framework that makes it easier to build applications powered by large language models. Developers use it because it provides ready-made components for the most common LLM patterns — chaining prompts together, connecting to external data sources, building agents that can use tools, and managing conversation memory. Instead of writing this plumbing from scratch, developers can focus on their product logic. It\'s particularly popular for building RAG systems, chatbots, and AI agents, and is backed by a large community with 100,000+ active developers.'},
+      ].map(t=>`<div style="border-left:3px solid ${t.col};background:rgba(255,255,255,.02);border-radius:0 8px 8px 0;padding:8px 10px">
+        <div style="font-size:.57rem;font-weight:700;color:${t.col};letter-spacing:.08em;margin-bottom:3px">${t.label}</div>
+        <div style="font-size:.68rem;color:${t.type==='final'?'var(--text)':'#94a3b8'};line-height:1.65;font-family:${t.type==='action'?'var(--font-m)':'var(--font-b)'}">${t.text}</div>
+      </div>`).join('')}
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px">
+      ${[
+        {l:'Iterations',v:'2',c:'var(--teal)'},
+        {l:'Tool Calls',v:'2',c:'var(--green)'},
+        {l:'Total Tokens',v:'~680',c:'var(--cyan)'},
+        {l:'Est. Cost',v:'$0.0024',c:'var(--pink)'},
+      ].map(m=>`<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center"><div style="font-family:var(--font-m);font-size:.88rem;font-weight:600;color:${m.c};margin-bottom:1px">${m.v}</div><div style="font-size:.55rem;color:var(--muted)">${m.l}</div></div>`).join('')}
+    </div>
+  </div>
+
+  <!-- Go deeper with Claude API -->
+  <div style="background:rgba(139,92,246,.05);border:1px solid rgba(139,92,246,.28);border-radius:14px;padding:14px">
+    <div style="font-size:.6rem;color:var(--violet,#8b5cf6);font-family:var(--font-d);letter-spacing:.12em;margin-bottom:7px">🔬 GO DEEPER — EXPLORE WITH LIVE CLAUDE API</div>
+    <div style="font-size:.7rem;color:#94a3b8;line-height:1.7;margin-bottom:10px">The free demo above shows a pre-computed run. Want to explore further? Use the <b style="color:var(--teal)">⚡ Live Demo tab</b> to run real agents with your own tasks — single agents, multi-agents, different tool combinations.</div>
+    <div style="font-size:.67rem;color:var(--muted);line-height:1.65;margin-bottom:8px">Some great questions to explore with the Live API:</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      ${[
+        '"How does a multi-agent system divide the research task between a researcher and a writer agent?"',
+        '"Show me how an agent handles a tool error and self-corrects."',
+        '"Compare: same task with 2 tools vs 6 tools — which is more efficient?"',
+        '"Demonstrate how memory_store allows the agent to recall context from step 1 at step 5."',
+      ].map(q=>`<div style="background:rgba(45,212,191,.04);border:1px solid rgba(45,212,191,.15);border-radius:7px;padding:7px 10px;font-size:.65rem;color:#94a3b8;line-height:1.5;font-style:italic cursor:pointer" onclick="showTab(6)">${q} <span style="color:var(--teal);font-style:normal">→ Try in Live Demo</span></div>`).join('')}
+    </div>
+    <button onclick="showTab(6)" style="width:100%;margin-top:10px;background:linear-gradient(135deg,var(--teal),var(--cyan));border:none;border-radius:10px;padding:10px;font-size:.75rem;font-weight:600;color:#06120e;cursor:pointer;font-family:var(--font-b)">🔬 Open Live API Demo →</button>
+  </div>
+
+</div>`},
 ];
 
 // ── TASK TEMPLATES ──
@@ -1222,19 +1556,34 @@ function executeTool(name,input){
   return toolRes[val]||toolRes.default;
 }
 
+// ── AGENT SCALE CALCULATOR ──
+function updateAgentScale(tasks){
+  const t=parseInt(tasks);
+  // Naive: avg 5 iterations × 800 tok/iter = 4000 tok per task
+  const naiveMon=Math.round(t*(4000*3+600*15)/1_000_000*30);
+  // Optimised: avg 3 iterations × 500 tok/iter, cached system prompt, max_tokens=800
+  const optMon=Math.round(t*(1500*3*0.4+500*0.30+400*15)/1_000_000*30);
+  const saved=naiveMon-optMon;
+  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  el('agentScaleDisplay',t.toLocaleString());
+  el('agentNaive','$'+naiveMon.toLocaleString());
+  el('agentOpt','$'+optMon.toLocaleString());
+  el('agentSaved','$'+saved.toLocaleString());
+}
+
 async function runAgent(){
-  const key=document.getElementById('apiKey').value.trim();
+  const key=document.getElementById('apiKey')?.value.trim();
   if(!key){alert('Please enter your Anthropic API key.');return;}
-  const task=document.getElementById('taskInput').value.trim();
+  const task=document.getElementById('taskInput')?.value.trim();
   if(!task){alert('Please enter a task.');return;}
 
   const btn=document.getElementById('runBtn');
   const outEl=document.getElementById('outputText');
   const tcDisplay=document.getElementById('toolCallsDisplay');
 
-  btn.disabled=true;btn.textContent='⏳ Agent Running…';
-  outEl.className='out-txt streaming';outEl.textContent='';
-  tcDisplay.innerHTML='';
+  if(btn){btn.disabled=true;btn.textContent='⏳ Agent Running…';}
+  if(outEl){outEl.className='out-txt streaming';outEl.textContent='';}
+  if(tcDisplay) tcDisplay.innerHTML='';
 
   const tools=[...enabledTools].map(name=>{
     const defs={
@@ -1255,82 +1604,108 @@ async function runAgent(){
   let totalOutTokens=0;
   const startTime=Date.now();
 
-  try{
-    let continueLoop=true;
-    let iterations=0;
-    const maxIter=8;
+  // ── LOOP PROTECTION ──
+  const MAX_ITER=6; // hard limit — prevents runaway costs
+  let iterations=0;
+  let continueLoop=true;
+  let cumulativeCost=0;
+  const COST_LIMIT=0.50; // hard stop at $0.50 per run
 
-    while(continueLoop && iterations<maxIter){
+  try{
+    while(continueLoop && iterations<MAX_ITER){
       iterations++;
+
+      // update iteration counter live
+      const iterEl=document.getElementById('tCalls');
+      if(iterEl) iterEl.textContent=`${toolCallCount} calls · iter ${iterations}/${MAX_ITER}`;
+
       const res=await fetch('https://api.anthropic.com/v1/messages',{
         method:'POST',
         headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
         body:JSON.stringify({
           model:'claude-sonnet-4-20250514',
-          max_tokens:1200,
-          system:`You are an autonomous AI research agent. Use the available tools to complete the user's task step by step. 
-Think carefully before each tool call. After gathering sufficient information, provide a comprehensive final answer.
-Always cite the tools and data sources you used.`,
+          max_tokens:800, // optimised — prevents verbose loops
+          system:`You are an autonomous AI research agent. Use tools to complete the task.
+Think before each tool call. After gathering info, provide a Final Answer.
+Be concise. Max ${MAX_ITER} total iterations.`,
           tools,
           messages
         })
       });
 
       const data=await res.json();
-      if(data.error){outEl.className='out-txt';outEl.textContent='❌ API Error: '+data.error.message;break;}
+      if(data.error){if(outEl){outEl.className='out-txt';outEl.textContent='❌ API Error: '+data.error.message;}break;}
 
-      totalInTokens+=(data.usage?.input_tokens||0);
-      totalOutTokens+=(data.usage?.output_tokens||0);
+      const iterInTok=data.usage?.input_tokens||0;
+      const iterOutTok=data.usage?.output_tokens||0;
+      totalInTokens+=iterInTok;
+      totalOutTokens+=iterOutTok;
 
-      // process response
+      // per-iteration cost check
+      const iterCost=(iterInTok*3+iterOutTok*15)/1_000_000;
+      cumulativeCost+=iterCost;
+
+      // update cost display live
+      const costEl=document.getElementById('tCost');
+      if(costEl) costEl.textContent='$'+cumulativeCost.toFixed(5);
+
+      // HARD COST STOP
+      if(cumulativeCost>=COST_LIMIT){
+        if(outEl){outEl.className='out-txt';outEl.textContent=`⚠️ Cost limit reached ($${COST_LIMIT}). Agent stopped after ${iterations} iterations to protect your budget. Increase the limit or simplify the task.`;}
+        break;
+      }
+
       const assistantContent=data.content;
       messages.push({role:'assistant',content:assistantContent});
 
       const toolUseBlocks=assistantContent.filter(b=>b.type==='tool_use');
       const textBlocks=assistantContent.filter(b=>b.type==='text');
 
-      // show text
       if(textBlocks.length>0){
         const txt=textBlocks.map(b=>b.text).join('\n');
-        if(txt.trim()){outEl.className='out-txt';outEl.textContent=txt;}
+        if(txt.trim()&&outEl){outEl.className='out-txt';outEl.textContent=txt;}
       }
 
-      if(toolUseBlocks.length===0 || data.stop_reason==='end_turn'){
+      if(toolUseBlocks.length===0||data.stop_reason==='end_turn'){
         continueLoop=false;
       } else {
-        // execute tools
         const toolResults=[];
         for(const tb of toolUseBlocks){
           toolCallCount++;
           const result=executeTool(tb.name,tb.input);
-          // display tool call
-          tcDisplay.insertAdjacentHTML('beforeend',`
+          if(tcDisplay) tcDisplay.insertAdjacentHTML('beforeend',`
             <div class="tcall">
-              <div class="tc-hdr"><span class="tc-badge">TOOL CALL ${toolCallCount}</span><span class="tc-name">${tb.name}(${JSON.stringify(tb.input).slice(0,60)}...)</span></div>
+              <div class="tc-hdr">
+                <span class="tc-badge">TOOL ${toolCallCount} · Iter ${iterations}</span>
+                <span class="tc-name">${tb.name}(${JSON.stringify(tb.input).slice(0,55)}…)</span>
+              </div>
               <div class="tc-body">Input: ${JSON.stringify(tb.input,null,2)}</div>
-              <div class="tc-result">✅ Result: ${result.slice(0,200)}${result.length>200?'…':''}</div>
+              <div class="tc-result">✅ ${result.slice(0,200)}${result.length>200?'…':''}</div>
             </div>`);
           toolResults.push({type:'tool_result',tool_use_id:tb.id,content:result});
         }
         messages.push({role:'user',content:toolResults});
-        // update counters
-        document.getElementById('tCalls').textContent=toolCallCount;
+      }
+
+      // MAX ITER WARNING
+      if(iterations===MAX_ITER && continueLoop){
+        if(outEl&&!outEl.textContent){outEl.className='out-txt';outEl.textContent=`⚠️ Max iterations (${MAX_ITER}) reached. Agent stopped. Task may be too complex — try breaking it into smaller steps.`;}
+        break;
       }
     }
 
     const elapsed=((Date.now()-startTime)/1000).toFixed(2);
-    const cost=((totalInTokens*3+totalOutTokens*15)/1000000).toFixed(5);
-    document.getElementById('tIn').textContent=totalInTokens;
-    document.getElementById('tOut').textContent=totalOutTokens;
-    document.getElementById('tCost').textContent='$'+cost;
-    document.getElementById('latency').textContent=elapsed+'s';
-    if(outEl.textContent===''){outEl.className='out-txt out-empty';outEl.textContent='Agent completed task — see tool calls above for the full trace.';}
+    const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+    el('tIn',totalInTokens);
+    el('tOut',totalOutTokens);
+    el('tCost','$'+cumulativeCost.toFixed(5));
+    el('latency',elapsed+'s');
+    if(outEl&&!outEl.textContent.trim()){outEl.className='out-txt out-empty';outEl.textContent='Agent completed — see tool calls above for the full trace.';}
 
   } catch(e){
-    outEl.className='out-txt';
-    outEl.textContent='❌ Error: '+e.message;
+    if(outEl){outEl.className='out-txt';outEl.textContent='❌ Error: '+e.message;}
   }
-  btn.disabled=false;btn.textContent='▶ Run Agent';
+  if(btn){btn.disabled=false;btn.textContent='▶ Run Agent';}
 }
 
 // ── SHOW TAB ──
