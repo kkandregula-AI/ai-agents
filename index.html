@@ -1231,6 +1231,12 @@ result = crew.<span class="fn">kickoff</span>(inputs={<span class="str">"topic"<
     <div style="font-size:.68rem;color:var(--muted)">Real cost of running agents — and how to control it</div>
   </div>
 
+  <!-- STATIC DISCLAIMER -->
+  <div style="background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.25);border-radius:11px;padding:10px 13px;margin-bottom:12px;display:flex;gap:9px;align-items:flex-start">
+    <span style="font-size:1rem;flex-shrink:0">📘</span>
+    <div style="font-size:.66rem;color:#94a3b8;line-height:1.6"><b style="color:var(--blue)">Educational benchmarks — not your live usage.</b> All numbers in the sections below are static, illustrative examples based on typical agent workloads, designed to teach cost patterns. Your <b style="color:var(--teal)">actual session usage</b> from the ⚡ Live Demo appears in the <b style="color:var(--green)">"Your Live Session"</b> panel at the bottom of this page.</div>
+  </div>
+
   <!-- KPI Row -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
     <div style="background:var(--card);border:1px solid rgba(248,113,113,.3);border-radius:13px;padding:13px;position:relative;overflow:hidden">
@@ -1387,6 +1393,85 @@ result = crew.<span class="fn">kickoff</span>(inputs={<span class="str">"topic"<
         <div style="font-size:.55rem;color:var(--muted)">per month</div>
       </div>
     </div>
+  </div>
+
+  <!-- ══ YOUR LIVE SESSION — REAL USAGE ══ -->
+  <div style="background:var(--card);border:2px solid rgba(74,222,128,.35);border-radius:14px;padding:15px;margin-bottom:12px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-15px;right:-15px;width:80px;height:80px;background:radial-gradient(circle,rgba(74,222,128,.12),transparent);border-radius:50%"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite"></div>
+      <div style="font-family:var(--font-d);font-size:.72rem;color:var(--green)">YOUR LIVE SESSION — Real Usage Data</div>
+    </div>
+    <div style="font-size:.63rem;color:var(--muted);margin-bottom:12px">Actual tokens and cost from your ⚡ Live Demo agent runs in this session</div>
+    ${sessionStats.runs===0?`
+      <div style="text-align:center;padding:18px 10px;background:rgba(255,255,255,.02);border:1px dashed var(--border2);border-radius:11px">
+        <div style="font-size:1.6rem;margin-bottom:6px">📭</div>
+        <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px">No agent runs yet this session</div>
+        <div style="font-size:.63rem;color:var(--muted2);margin-bottom:10px">Run an agent in the Live Demo tab and your real costs will appear here</div>
+        <button onclick="showTab(6)" style="background:linear-gradient(135deg,var(--teal),var(--cyan));border:none;border-radius:9px;padding:8px 18px;font-size:.68rem;font-weight:600;color:#06120e;cursor:pointer;font-family:var(--font-b)">⚡ Open Live Demo →</button>
+      </div>
+    `:`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(45,212,191,.25);border-radius:10px;padding:10px;text-align:center">
+          <div style="font-family:var(--font-m);font-size:1.1rem;font-weight:700;color:var(--teal)">${sessionStats.runs}</div>
+          <div style="font-size:.56rem;color:var(--muted)">Agent Runs</div>
+        </div>
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(34,211,238,.25);border-radius:10px;padding:10px;text-align:center">
+          <div style="font-family:var(--font-m);font-size:1.1rem;font-weight:700;color:var(--cyan)">${sessionStats.totalToolCalls}</div>
+          <div style="font-size:.56rem;color:var(--muted)">Tool Calls</div>
+        </div>
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(96,165,250,.25);border-radius:10px;padding:10px;text-align:center">
+          <div style="font-family:var(--font-m);font-size:1.1rem;font-weight:700;color:var(--blue)">${(sessionStats.totalIn+sessionStats.totalOut).toLocaleString()}</div>
+          <div style="font-size:.56rem;color:var(--muted)">Total Tokens (${sessionStats.totalIn.toLocaleString()} in / ${sessionStats.totalOut.toLocaleString()} out)</div>
+        </div>
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(244,114,182,.25);border-radius:10px;padding:10px;text-align:center">
+          <div style="font-family:var(--font-m);font-size:1.1rem;font-weight:700;color:var(--pink)">$${sessionStats.totalCost.toFixed(5)}</div>
+          <div style="font-size:.56rem;color:var(--muted)">Actual Cost (with optimiser)</div>
+        </div>
+      </div>
+
+      <!-- Optimiser savings comparison -->
+      <div style="background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.22);border-radius:10px;padding:11px;margin-bottom:8px">
+        <div style="font-size:.58rem;color:var(--green);font-family:var(--font-d);letter-spacing:.1em;margin-bottom:8px">💚 OPTIMISER IMPACT — THIS SESSION</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:8px">
+          <div style="text-align:center">
+            <div style="font-family:var(--font-m);font-size:.85rem;color:var(--red)">$${(sessionStats.totalCost*2.4).toFixed(5)}</div>
+            <div style="font-size:.54rem;color:var(--muted)">Without guardrails (est.)</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:var(--font-m);font-size:.85rem;color:var(--green)">$${sessionStats.totalCost.toFixed(5)}</div>
+            <div style="font-size:.54rem;color:var(--muted)">Your actual cost</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:var(--font-m);font-size:.85rem;color:var(--gold)">~$${(sessionStats.totalCost*1.4).toFixed(5)}</div>
+            <div style="font-size:.54rem;color:var(--muted)">Saved by optimiser</div>
+          </div>
+        </div>
+        <div style="font-size:.6rem;color:#94a3b8;line-height:1.55">Your runs used <b style="color:var(--green)">max_tokens=800</b>, <b style="color:var(--green)">max_iterations=6</b>, and the <b style="color:var(--green)">$0.50 cost cap</b>. Without these guardrails, typical agent runs use ~2.4× more tokens through verbose outputs and extra loop iterations.</div>
+      </div>
+
+      <!-- Per-run breakdown -->
+      ${sessionStats.runLog.length>0?`
+      <div style="font-size:.58rem;color:var(--muted);font-family:var(--font-d);letter-spacing:.1em;margin-bottom:6px">📋 RUN LOG</div>
+      <div style="overflow-x:auto;border:1px solid var(--border);border-radius:9px">
+        <table style="width:100%;border-collapse:collapse;font-size:.62rem;font-family:var(--font-m)">
+          <thead><tr>
+            <th style="background:#060e1c;color:var(--cyan);padding:6px 9px;text-align:left;font-size:.55rem">#</th>
+            <th style="background:#060e1c;color:var(--cyan);padding:6px 9px;text-align:left;font-size:.55rem">Model</th>
+            <th style="background:#060e1c;color:var(--cyan);padding:6px 9px;text-align:left;font-size:.55rem">Iter</th>
+            <th style="background:#060e1c;color:var(--cyan);padding:6px 9px;text-align:left;font-size:.55rem">Tokens</th>
+            <th style="background:#060e1c;color:var(--cyan);padding:6px 9px;text-align:left;font-size:.55rem">Cost</th>
+          </tr></thead>
+          <tbody>${sessionStats.runLog.map((r,i)=>`<tr>
+            <td style="padding:5px 9px;border-top:1px solid rgba(23,32,48,.5);color:var(--muted)">${i+1}</td>
+            <td style="padding:5px 9px;border-top:1px solid rgba(23,32,48,.5);color:${r.model.includes('fable')?'var(--gold)':'var(--teal)'}">${r.model.includes('fable')?'Fable 5':'Sonnet 4'}</td>
+            <td style="padding:5px 9px;border-top:1px solid rgba(23,32,48,.5);color:var(--text)">${r.iterations}</td>
+            <td style="padding:5px 9px;border-top:1px solid rgba(23,32,48,.5);color:var(--text)">${(r.inTok+r.outTok).toLocaleString()}</td>
+            <td style="padding:5px 9px;border-top:1px solid rgba(23,32,48,.5);color:var(--green)">$${r.cost.toFixed(5)}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>`:''}
+    `}
   </div>
 
 </div>`},
@@ -1594,6 +1679,9 @@ function executeTool(name,input){
   return toolRes[val]||toolRes.default;
 }
 
+// ── SESSION USAGE TRACKING (real data for the live dashboard) ──
+let sessionStats={runs:0,totalIn:0,totalOut:0,totalCost:0,totalToolCalls:0,runLog:[]};
+
 // ── MODEL CONFIG ──
 // Pricing per 1M tokens (input/output) — verified June 2026
 const MODELS=[
@@ -1779,6 +1867,14 @@ Be concise. Max ${MAX_ITER} total iterations.`,
     el('tCost','$'+cumulativeCost.toFixed(5));
     el('latency',elapsed+'s');
     if(outEl&&!outEl.textContent.trim()){outEl.className='out-txt out-empty';outEl.textContent='Agent completed — see tool calls above for the full trace.';}
+
+    // ── RECORD REAL SESSION USAGE (powers the live dashboard in Token Dashboard tab) ──
+    sessionStats.runs++;
+    sessionStats.totalIn+=totalInTokens;
+    sessionStats.totalOut+=totalOutTokens;
+    sessionStats.totalCost+=cumulativeCost;
+    sessionStats.totalToolCalls+=toolCallCount;
+    sessionStats.runLog.push({model:model.id,iterations,inTok:totalInTokens,outTok:totalOutTokens,cost:cumulativeCost,toolCalls:toolCallCount});
 
   } catch(e){
     if(outEl){outEl.className='out-txt';outEl.textContent='❌ Error: '+e.message;}
