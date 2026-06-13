@@ -997,19 +997,7 @@ All 3 companies covered. Proceed to draft."</code></div></div>
     </div>
     <div style="font-size:.6rem;color:var(--muted2);margin-bottom:12px">🔒 Key stays in your browser — only sent to api.anthropic.com</div>
 
-    <!-- MODEL SELECTOR -->
-    <div class="api-lbl">🤖 SELECT MODEL</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:6px" id="modelSel">
-      <button id="modelBtn0" onclick="selModel(0)" style="background:rgba(45,212,191,.1);border:2px solid rgba(45,212,191,.45);border-radius:10px;padding:9px 10px;cursor:pointer;text-align:left;transition:all .2s">
-        <div style="font-size:.68rem;font-weight:700;color:var(--teal)">Claude Sonnet 4</div>
-        <div style="font-size:.56rem;color:var(--muted);margin-top:1px">$3/$15 per MTok · Recommended for learning</div>
-      </button>
-      <button id="modelBtn1" onclick="selModel(1)" style="background:rgba(255,255,255,.02);border:2px solid var(--border);border-radius:10px;padding:9px 10px;cursor:pointer;text-align:left;transition:all .2s">
-        <div style="font-size:.68rem;font-weight:700;color:var(--gold)">Claude Fable 5 ⭐ NEW</div>
-        <div style="font-size:.56rem;color:var(--muted);margin-top:1px">$10/$50 per MTok · Most agentic model</div>
-      </button>
-    </div>
-    <div id="modelNote" style="font-size:.62rem;color:var(--muted);background:rgba(45,212,191,.04);border:1px solid rgba(45,212,191,.15);border-radius:8px;padding:8px 10px;margin-bottom:12px;line-height:1.55">💡 Sonnet 4 is the budget-friendly choice for learning the agent loop. Switch to Fable 5 to experience Anthropic's Mythos-class model — built specifically for multi-step agentic work.</div>
+    <div style="font-size:.62rem;color:var(--muted);background:rgba(45,212,191,.04);border:1px solid rgba(45,212,191,.15);border-radius:8px;padding:8px 10px;margin-bottom:12px;line-height:1.55">🤖 This demo runs on <b style="color:var(--teal)">Claude Sonnet 4</b> ($3/$15 per MTok) — the recommended balance of quality and cost for learning the agent loop.</div>
 
     <div class="api-lbl">🎯 SELECT AGENT TASK</div>
     <div class="sc-sel" id="scSel">
@@ -1326,7 +1314,7 @@ result = crew.<span class="fn">kickoff</span>(inputs={<span class="str">"topic"<
       {tip:'Cache the system prompt',saving:'Reuse identical system prompt across calls',impact:'~90% on cached tokens',col:'var(--green)'},
       {tip:'Limit tools to 3–4',saving:'Fewer tokens in tool definitions',impact:'~15% per call',col:'var(--cyan)'},
       {tip:'Set max_tokens=800',saving:'Cap verbose output per iteration',impact:'~25% on output',col:'var(--amber)'},
-      {tip:'Route by task complexity',saving:'Haiku for routing, Sonnet for standard agents, Fable 5 only for genuinely hard multi-step work',impact:'~60% on routing steps',col:'var(--teal)'},
+      {tip:'Route by task complexity',saving:'Haiku for routing/classification, Sonnet for standard agents, Opus only for the hardest reasoning',impact:'~60% on routing steps',col:'var(--teal)'},
     ].map((t,i)=>`
       <div style="display:flex;gap:10px;padding:8px 0;border-bottom:${i<4?'1px solid rgba(23,32,48,.5)':'none'};align-items:flex-start">
         <div style="width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid ${t.col};color:${t.col};font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</div>
@@ -1338,15 +1326,15 @@ result = crew.<span class="fn">kickoff</span>(inputs={<span class="str">"topic"<
       </div>`).join('')}
   </div>
 
-  <!-- MODEL ROUTING GUIDE — NEW for Fable 5 -->
+  <!-- MODEL ROUTING GUIDE — educational -->
   <div style="background:var(--card);border:1px solid rgba(244,185,66,.3);border-radius:14px;padding:15px;margin-bottom:12px">
-    <div style="font-family:var(--font-d);font-size:.72rem;color:var(--gold);margin-bottom:4px">⭐ Model Routing — Which Claude for Which Agent Task?</div>
-    <div style="font-size:.63rem;color:var(--muted);margin-bottom:12px">With Claude Fable 5 (June 2026), choosing the right model per task matters more than ever. Cost varies 30×+ between models.</div>
+    <div style="font-family:var(--font-d);font-size:.72rem;color:var(--gold);margin-bottom:4px">⚖️ Model Routing — Which Claude for Which Agent Task?</div>
+    <div style="font-size:.63rem;color:var(--muted);margin-bottom:12px">A key cost skill: match the model to the task. Cost varies 10×+ across the Claude family. (This guide is informational — the Live Demo runs on Sonnet 4.)</div>
     ${[
-      {model:'Claude Haiku 4.5',price:'Lowest cost',use:'Classification, routing decisions, simple tool selection, input validation',col:'var(--green)',badge:'HIGH VOLUME'},
+      {model:'Claude Haiku 4.5',price:'$1 / $5 per MTok',use:'Classification, routing decisions, simple tool selection, input validation',col:'var(--green)',badge:'HIGH VOLUME'},
       {model:'Claude Sonnet 4.6',price:'$3 / $15 per MTok',use:'Standard agents, most tool-use workflows, research tasks, this app\'s demos',col:'var(--teal)',badge:'DEFAULT'},
       {model:'Claude Opus 4.8',price:'$5 / $25 per MTok',use:'Complex reasoning, code generation, latency-sensitive premium work',col:'var(--cyan)',badge:'PREMIUM'},
-      {model:'Claude Fable 5 ⭐',price:'$10 / $50 per MTok',use:'Long-running multi-step agents, deep research, large migrations — tasks taking hours/days. Mythos-class, 1M context, self-correcting verification loops',col:'var(--gold)',badge:'FRONTIER · NEW'},
+      {model:'Claude Fable 5',price:'$10 / $50 per MTok',use:'Long-running multi-step agents, deep research, large migrations. Mythos-class, 1M context. Note: limited / metered availability — not used in this app\'s demo',col:'var(--gold)',badge:'FRONTIER · LIMITED ACCESS'},
     ].map(m=>`
       <div style="background:rgba(255,255,255,.02);border:1px solid var(--border2);border-radius:10px;padding:10px 12px;margin-bottom:7px">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
@@ -1358,7 +1346,7 @@ result = crew.<span class="fn">kickoff</span>(inputs={<span class="str">"topic"<
       </div>`).join('')}
     <div style="background:rgba(244,185,66,.05);border:1px solid rgba(244,185,66,.2);border-radius:8px;padding:9px;margin-top:4px">
       <div style="font-size:.62rem;font-weight:600;color:var(--gold);margin-bottom:3px">💡 The Production Pattern (2026)</div>
-      <div style="font-size:.66rem;color:#94a3b8;line-height:1.6">Route hard, high-value jobs to Fable 5; everything else to a cheaper model. Fable 5 often finishes complex tasks in fewer turns and tokens — so a job at 2–3× the per-token rate can cost less than the sticker suggests on genuinely hard tasks. But for simple agent loops like our research demo, Sonnet is the smarter economic choice. Try both in the ⚡ Live Demo and compare!</div>
+      <div style="font-size:.66rem;color:#94a3b8;line-height:1.6">Route hard, high-value jobs to the most capable model; send everything else to a cheaper one. For simple agent loops like our research demo, <b style="color:var(--teal)">Sonnet 4 is the smart economic choice</b> — which is exactly what this app uses. Haiku handles routing and classification at a fraction of the cost.</div>
     </div>
   </div>
 
@@ -1452,20 +1440,20 @@ result = crew.<span class="fn">kickoff</span>(inputs={<span class="str">"topic"<
 
       <!-- Per-run breakdown -->
       ${sessionStats.runLog.length>0?`
-      <div style="font-size:.58rem;color:var(--muted);font-family:var(--font-d);letter-spacing:.1em;margin-bottom:6px">📋 RUN LOG</div>
+      <div style="font-size:.58rem;color:var(--muted);font-family:var(--font-d);letter-spacing:.1em;margin-bottom:6px">📋 RUN LOG · Claude Sonnet 4</div>
       <div style="overflow-x:auto;border:1px solid var(--border);border-radius:9px">
         <table style="width:100%;border-collapse:collapse;font-size:.62rem;font-family:var(--font-m)">
           <thead><tr>
             <th style="background:#060e1c;color:var(--cyan);padding:6px 9px;text-align:left;font-size:.55rem">#</th>
-            <th style="background:#060e1c;color:var(--cyan);padding:6px 9px;text-align:left;font-size:.55rem">Model</th>
-            <th style="background:#060e1c;color:var(--cyan);padding:6px 9px;text-align:left;font-size:.55rem">Iter</th>
+            <th style="background:#060e1c;color:var(--cyan);padding:6px 9px;text-align:left;font-size:.55rem">Iterations</th>
+            <th style="background:#060e1c;color:var(--cyan);padding:6px 9px;text-align:left;font-size:.55rem">Tool Calls</th>
             <th style="background:#060e1c;color:var(--cyan);padding:6px 9px;text-align:left;font-size:.55rem">Tokens</th>
             <th style="background:#060e1c;color:var(--cyan);padding:6px 9px;text-align:left;font-size:.55rem">Cost</th>
           </tr></thead>
           <tbody>${sessionStats.runLog.map((r,i)=>`<tr>
             <td style="padding:5px 9px;border-top:1px solid rgba(23,32,48,.5);color:var(--muted)">${i+1}</td>
-            <td style="padding:5px 9px;border-top:1px solid rgba(23,32,48,.5);color:${r.model.includes('fable')?'var(--gold)':'var(--teal)'}">${r.model.includes('fable')?'Fable 5':'Sonnet 4'}</td>
             <td style="padding:5px 9px;border-top:1px solid rgba(23,32,48,.5);color:var(--text)">${r.iterations}</td>
+            <td style="padding:5px 9px;border-top:1px solid rgba(23,32,48,.5);color:var(--text)">${r.toolCalls}</td>
             <td style="padding:5px 9px;border-top:1px solid rgba(23,32,48,.5);color:var(--text)">${(r.inTok+r.outTok).toLocaleString()}</td>
             <td style="padding:5px 9px;border-top:1px solid rgba(23,32,48,.5);color:var(--green)">$${r.cost.toFixed(5)}</td>
           </tr>`).join('')}</tbody>
@@ -1683,36 +1671,8 @@ function executeTool(name,input){
 let sessionStats={runs:0,totalIn:0,totalOut:0,totalCost:0,totalToolCalls:0,runLog:[]};
 
 // ── MODEL CONFIG ──
-// Pricing per 1M tokens (input/output) — verified June 2026
-const MODELS=[
-  {id:'claude-sonnet-4-20250514',name:'Claude Sonnet 4',inPrice:3,outPrice:15,col:'var(--teal)',
-   note:'💡 Sonnet 4 is the budget-friendly choice for learning the agent loop. Switch to Fable 5 to experience Anthropic\'s Mythos-class model — built specifically for multi-step agentic work.'},
-  {id:'claude-fable-5',name:'Claude Fable 5',inPrice:10,outPrice:50,col:'var(--gold)',
-   note:'⭐ Fable 5 is Anthropic\'s Mythos-class model (June 2026) — built for long-running, multi-step agentic tasks with self-correcting verification loops. 1M context window. ~3.3× the cost of Sonnet — the $0.50 cost limit will trigger sooner. Watch how it plans differently!'},
-];
-let selectedModel=0;
-
-function selModel(idx){
-  selectedModel=idx;
-  for(let i=0;i<2;i++){
-    const b=document.getElementById('modelBtn'+i);
-    if(!b) continue;
-    const m=MODELS[i];
-    if(i===idx){
-      b.style.background=i===0?'rgba(45,212,191,.1)':'rgba(244,185,66,.1)';
-      b.style.borderColor=i===0?'rgba(45,212,191,.45)':'rgba(244,185,66,.5)';
-    } else {
-      b.style.background='rgba(255,255,255,.02)';
-      b.style.borderColor='var(--border)';
-    }
-  }
-  const note=document.getElementById('modelNote');
-  if(note){
-    note.textContent=MODELS[idx].note;
-    note.style.borderColor=idx===0?'rgba(45,212,191,.15)':'rgba(244,185,66,.25)';
-    note.style.background=idx===0?'rgba(45,212,191,.04)':'rgba(244,185,66,.05)';
-  }
-}
+// Live demo runs on Sonnet 4. Pricing per 1M tokens (input/output).
+const MODEL={id:'claude-sonnet-4-20250514',name:'Claude Sonnet 4',inPrice:3,outPrice:15};
 
 // ── AGENT SCALE CALCULATOR ──
 function updateAgentScale(tasks){
@@ -1768,7 +1728,7 @@ async function runAgent(){
   let continueLoop=true;
   let cumulativeCost=0;
   const COST_LIMIT=0.50; // hard stop at $0.50 per run
-  const model=MODELS[selectedModel]; // selected model with its pricing
+  const model=MODEL; // Sonnet 4
 
   try{
     while(continueLoop && iterations<MAX_ITER){
@@ -1795,10 +1755,10 @@ Be concise. Max ${MAX_ITER} total iterations.`,
       const data=await res.json();
       if(data.error){if(outEl){outEl.className='out-txt';outEl.textContent='❌ API Error: '+data.error.message;}break;}
 
-      // ── REFUSAL HANDLING (new in Claude Fable 5) ──
-      // Fable 5 can return HTTP 200 with stop_reason "refusal" — handle gracefully
+      // ── REFUSAL HANDLING ──
+      // Some models can return HTTP 200 with stop_reason "refusal" — handle gracefully
       if(data.stop_reason==='refusal'){
-        if(outEl){outEl.className='out-txt';outEl.textContent='🛡️ The model declined this request (stop_reason: "refusal"). This is a built-in safety behaviour of Mythos-class models like Fable 5 — production agents must handle refusals as normal control flow, not errors. Try rephrasing the task.';}
+        if(outEl){outEl.className='out-txt';outEl.textContent='🛡️ The model declined this request (stop_reason: "refusal"). Production agents must handle refusals as normal control flow, not errors. Try rephrasing the task.';}
         break;
       }
 
